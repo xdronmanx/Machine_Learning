@@ -15,8 +15,8 @@ b = numpy.array(([0] * k))
 y = numpy.array(ylist)
 
 
-def LINE(list1, list2, list3):
-    X_line = numpy.array((line_1, list1, list2, list3))
+def LINE(X_line):
+    X_line
     b = numpy.dot(numpy.dot((numpy.linalg.inv(numpy.dot(X_line.transpose(), X_line))), X_line.transpose()), y)
     return b
 
@@ -30,62 +30,35 @@ def POLYNOM(x1, k):
     return b
 
 
-def g1(n):
-    return n
+def NELINE(list):
+    glist = [[]]
+    for x in range(len(glist)):
+        for i in range(0, x1.size):
+            glist[x] = glist[x] + [list[x](x1[i])]
+    X_neline = numpy.array((line_1))
+    for x in range(0,len(glist)):
+        X_neline = numpy.vstack((X_neline,numpy.array((glist[x]))))
 
 
-def g2(n):
-    return n + 1
-
-
-def g3(n):
-    return n
-
-
-def NELINE(g1, g2, g3):
-    glist1 = []
-    for i in range(0, x1.size):
-        glist1 = glist1 + [g1(x1[i])]
-
-    glist2 = []
-    for i in range(0, x1.size):
-        glist2 = glist2 + [g2(x1[i])]
-
-    glist3 = []
-    for i in range(0, x1.size):
-        glist3 = glist3 + [g3(x1[i])]
-
-    X_neline = numpy.vstack((line_1, numpy.array((glist1, glist2, glist3))))
     b = numpy.dot(numpy.dot((numpy.linalg.inv(numpy.dot(X_neline.transpose(), X_neline))), X_neline.transpose()), y)
     return b
 
 
-def TEST(dataset, type, k, g1, g2, g3):
-    for x in range(0,len(dataset)):
-        X_polynom = dataset[x]
-        for i in range(2, k):
-            X_polynom = numpy.vstack((X_polynom, dataset[x] * i))
-        X_polynom = numpy.vstack((line_1, X_polynom))
-        X_line = numpy.array((line_1, list1, list2, list3))
-        glist1 = []
-        for i in range(0, x1.size):
-            glist1 = glist1 + [g1(x1[i])]
+def TEST(type,X_line,X_polynom,X_neline,list,results,x1,k):
 
-        glist2 = []
-        for i in range(0, x1.size):
-            glist2 = glist2 + [g2(x1[i])]
-
-        glist3 = []
-        for i in range(0, x1.size):
-            glist3 = glist3 + [g3(x1[i])]
-
-        X_neline = numpy.vstack((line_1, numpy.array((glist1, glist2, glist3))))
-        if type == 1:
-            X = X_line
-            y = numpy.dot(X, LINE(x1))
-        elif type == 2:
-            X = X_polynom
-            y = numpy.dot(X, POLYNOM(x1, k))
-        elif type == 3:
-            X = X_neline
-            y = numpy.dot(X, NELINE(g1, g2, g3))
+    if type == 1:
+        X = X_line
+        b = LINE(X)
+        y = numpy.dot(X,b)
+        error = results - y
+    elif type == 2:
+        X = X_polynom
+        b = POLYNOM(x1,k)
+        y = numpy.dot(X,b)
+        error = results - y
+    elif type == 3:
+        X = X_neline
+        b = NELINE(list)
+        y = numpy.dot(X,b)
+        error = results - y
+    return abs(error)    

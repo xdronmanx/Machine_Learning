@@ -1,4 +1,6 @@
 import numpy
+import math
+import random
 
 k = 3
 list1 = [8, 1, 3, 4]
@@ -13,6 +15,8 @@ x3 = numpy.array(list3)
 
 b = numpy.array(([0] * k))
 y = numpy.array(ylist)
+
+test = numpy.array((list1, list2, list3))
 
 
 def LINE(X_line):
@@ -36,29 +40,60 @@ def NELINE(list):
         for i in range(0, x1.size):
             glist[x] = glist[x] + [list[x](x1[i])]
     X_neline = numpy.array((line_1))
-    for x in range(0,len(glist)):
-        X_neline = numpy.vstack((X_neline,numpy.array((glist[x]))))
-
+    for x in range(0, len(glist)):
+        X_neline = numpy.vstack((X_neline, numpy.array((glist[x]))))
 
     b = numpy.dot(numpy.dot((numpy.linalg.inv(numpy.dot(X_neline.transpose(), X_neline))), X_neline.transpose()), y)
     return b
 
 
-def TEST(type,X_line,X_polynom,X_neline,list,results,x1,k):
+test = numpy.array((list1, list2, list3))
 
-    if type == 1:
-        X = X_line
-        b = LINE(X)
-        y = numpy.dot(X,b)
-        error = results - y
-    elif type == 2:
-        X = X_polynom
-        b = POLYNOM(x1,k)
-        y = numpy.dot(X,b)
-        error = results - y
-    elif type == 3:
-        X = X_neline
-        b = NELINE(list)
-        y = numpy.dot(X,b)
-        error = results - y
-    return abs(error)    
+
+def CV_k_fold(X, type, k):
+    error = 0
+    X = numpy.array_split(X, k)
+    for j in range(1, k - 1):
+        X_matrix = numpy.vstack((X[0:j], X[j + 1, k]))
+        if type == 1:
+            b = LINE(X_matrix)
+            y = numpy.dot(X_matrix, b)
+            error = error + abs(numpy.sum(y - X[j]))
+        elif type == 2:
+            b = POLYNOM(X_matrix, 10)
+            y = numpy.dot(X_matrix, b)
+            error = error + abs(numpy.sum(y - X[j]))
+        elif type == 3:
+            b = NELINE(X_matrix)
+            y = numpy.dot(X_matrix, b)
+            error = error + abs(numpy.sum(y - X[j]))
+    return error
+
+
+def CV_leave_one_out(X, type):
+    error = 0
+    k = numpy.shape(X)[0]
+    X = numpy.array_split(X, k)
+    for j in range(1, k):
+        X_matrix = numpy.vstack((X[0:j], X[j + 1, k]))
+        if type == 1:
+            b = LINE(X_matrix)
+            y = numpy.dot(X_matrix, b)
+            error = error + abs(numpy.sum(y - X[j]))
+        elif type == 2:
+            b = POLYNOM(X_matrix, 10)
+            y = numpy.dot(X_matrix, b)
+            error = error + abs(numpy.sum(y - X[j]))
+        elif type == 3:
+            b = NELINE(X_matrix)
+            y = numpy.dot(X_matrix, b)
+            error = error + abs(numpy.sum(y - X[j]))
+    return error
+
+
+def COMPARE(X, type, k):
+    e1 = CV_k_fold(X, type, k)
+    e2 = CV_leave_one_out(X, type)
+    print("Ошибка при 1 кросс-валидации :", e1)
+    print("Ошибка при 2 кросс-валидации :", e2)
+    print("Разница ошибок :", abs(e1 - e2))

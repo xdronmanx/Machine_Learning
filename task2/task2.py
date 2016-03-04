@@ -52,9 +52,8 @@ test = numpy.array((list1, list2, list3))
 
 def CV_k_fold(X, type, k):
     error = 0
-    X = numpy.array_split(X, k)
     for j in range(1, k - 1):
-        X_matrix = numpy.vstack((X[0:j], X[j + 1, k]))
+        X_matrix = numpy.vstack((X[0:j], X[j + 1: k]))
         if type == 1:
             b = LINE(X_matrix)
             y = numpy.dot(X_matrix, b)
@@ -73,9 +72,8 @@ def CV_k_fold(X, type, k):
 def CV_leave_one_out(X, type):
     error = 0
     k = numpy.shape(X)[0]
-    X = numpy.array_split(X, k)
-    for j in range(1, k):
-        X_matrix = numpy.vstack((X[0:j], X[j + 1, k]))
+    for j in range(1, k-1):
+        X_matrix = numpy.vstack((X[0:j], X[j + 1: k]))
         if type == 1:
             b = LINE(X_matrix)
             y = numpy.dot(X_matrix, b)

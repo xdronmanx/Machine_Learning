@@ -73,4 +73,3 @@ def CV_leave_one_out_SVM(x, y):
             error = error + 1
     return ((k - 2) - error) / (k - 2)
 
-print(CV_leave_one_out_SVM(x_new,y_new))
